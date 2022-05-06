@@ -1,0 +1,5 @@
+[MASTER]
+extension-pkg-whitelist=pydantic
+disable=W0223
+init-hook='import os sys; sys.path.append(os.getcwd())'
+generated-members=setting,googleapiclient.discovery.*
