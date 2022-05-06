@@ -1,4 +1,4 @@
-name: Pytest
+name: Pytest_Pylint
 
 on:
   push:
@@ -32,3 +32,30 @@ jobs:
         run: mv setting_sample.py setting.py
       - name: Run Testing
         run: PYTHONPATH=./ poetry run pytest -vv --cov-report=term-missing --cov ./
+  run_pylint:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install memcached libs
+        run: sudo apt-get install ca-certificates libmemcached-dev
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.1.13
+          virtualenvs-create: true
+          virtualenvs-in-project: false
+          installer-parallel: true
+      - name: Install dependencies
+        run: poetry install
+      - name: Create setting.py
+        run: mv setting_sample.py setting.py
+      - name: Run Pylint
+        run: poetry run pylint -v ./main.py ./module/ ./models/ ./view/ ./celery_task/
